@@ -31,6 +31,9 @@ http.createServer(async function(req, res){
         res.write('\n\t<ul>');
         res.write('\n\t\t<li><a href="/vanasona"> Tänane vanasõna</a></li>');
         res.write('\n\t<ul>');
+        res.write('\n\t<ul>');
+        res.write('\n\t\t<li><a href="/pohjus"> Kodutöö lisand</a></li>');
+        res.write('\n\t<ul>');
         res.write(pageFoot);
         //res.write('Veeb läkski käima!');
         return res.end();
@@ -45,7 +48,7 @@ http.createServer(async function(req, res){
         //res.write('Veeb läkski käima!');
         return res.end();
     }
-    else if (currentURL.pathname === '/põhjus'){
+    else if (currentURL.pathname === '/pohjus'){
         res.writeHead(200, {"Content-type": "text/html; charset=utf-8"});
         res.write(pageHead);
         res.write(pageBanner);

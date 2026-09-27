@@ -6,6 +6,7 @@ const path = require('path');
 //moodul failide haldamiseks, ASYNC puhul on vaja seda toetavat erilist moodulit
 //const fs = require('fs');
 const fs = require('fs').promises;
+let vanasona = require('./src/randomVanasona')
 let time = require('./src/dateTimeET');
 const pageHead = '<!DOCTYPE html>\n<html lang="et">\n<head>\n\t<meta charset="utf-8">\n\t<title>Kaspar Rooste, veebiprogrammeerimine</title>\n</head>\n<body>\n';
 const pageBody = '\t<h1>Kaspar Rooste, veebiprogrammeerimine</h1>\n\t <p>See leht on loodud veebiprogrammeerimise kursusel <a href="https://www.tlu.ee">Tallinna Ülikoolis</a> ning ei sisalda tõsiseltvõetavat sisu!</p>\n\t<p>Esialgu tutvusime lihtsalt HTML keelega, peatselt programmeerime.</p> \n\t<hr>';
@@ -27,6 +28,8 @@ http.createServer(async function(req, res){
         res.write(pageHead);
         res.write(pageBanner);
         res.write(pageBody);
+        res.write('<img src="/images.jpg" alt="Sült">');
+        res.write('<p>Mulle ei meeldi sült!')
         res.write(pageInfo);
         res.write('\n\t<ul>');
         res.write('\n\t\t<li><a href="/vanasona"> Tänane vanasõna</a></li>');
@@ -42,8 +45,11 @@ http.createServer(async function(req, res){
         res.writeHead(200, {"Content-type": "text/html; charset=utf-8"});
         res.write(pageHead);
         res.write(pageBanner);
+
+        let todayVanasona = await vanasona();
         res.write('\t<h1>Eesti vanasonad</h1>\n\t<p>Siin näed tänase päeva vanasõna.</p>\n\t<hr>');
-        res.write('\n\t<p><a href= "/">Tagasi avalehele</a></p>')
+        res.write('\t <p>' + todayVanasona + '</p>');
+        res.write('\n\t<p><a href= "/">Tagasi avalehele</a></p>');  
         res.write(pageFoot);
         //res.write('Veeb läkski käima!');
         return res.end();
@@ -53,28 +59,43 @@ http.createServer(async function(req, res){
         res.write(pageHead);
         res.write(pageBanner);
         res.write(pohjus);
+        res.write('\n\t<p><a href= "/">Tagasi avalehele</a></p>');
         res.write(pageFoot);
         return res.end();
     }
     else if (currentURL.pathname === '/veebiprogrammeerimine_2026_TA.png'){
-        //teeme pildi tegeliku asukoha programmilse kätte saadavaks
         let picPath = path.join(__dirname, 'pic', currentURL.pathname);
 
         try {
-            const data = await fs.readFile(picPath)
-            res.writeHead(200,{"Contenet-type": "image/png"});
+            const data = await fs.readFile(picPath);
+            res.writeHead(200, {"Content-type": "image/png"});
             res.end(data);
         }
         catch (err){
-                res.writeHead(404, {"Content-type": "text/plain; charset=utf8"});
-                return res.end('Pilti ei leitud!');
-            }
-            
+            res.writeHead(404, {"Content-type": "text/plain; charset=utf-8"});
+            return res.end('Pilti ei leitud!');
+        }
+    }
 
+    else if (path.extname(currentURL.pathname) === '.jpg'){
+        let picPath = path.join(__dirname, 'pic', currentURL.pathname);
+
+        try {
+            const data = await fs.readFile(picPath);
+            res.writeHead(200, {"Content-type": "image/jpeg"});
+            res.end(data);
+        }
+        catch (err){
+            res.writeHead(404, {"Content-type": "text/plain; charset=utf-8"});
+            return res.end('Pilti ei leitud!');
+        }
     }
+
     else {
-        res.end('Viga 404, ei leia sellist lehte!')
+        res.end('Viga 404, ei leia sellist lehte!');
     }
+
+
 
 
    
